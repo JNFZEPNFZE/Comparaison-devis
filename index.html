@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comparaison de devis</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="entete no-print">
+    <div>
+      <h1>Comparaison de devis</h1>
+      <p class="sous-titre">Copropriété — préparation de l'AG et des réunions du conseil syndical</p>
+    </div>
+    <div class="actions-entete">
+      <button type="button" id="btn-exemple" class="btn-discret">Charger un exemple</button>
+      <button type="button" id="btn-ouvrir" class="btn-discret">Ouvrir un dossier…</button>
+      <button type="button" id="btn-sauver" class="btn-discret">Enregistrer le dossier</button>
+      <button type="button" id="btn-nouveau" class="btn-discret">Nouveau</button>
+      <input type="file" id="input-dossier" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. Dossier -->
+    <section class="carte no-print" id="section-dossier">
+      <h2><span class="num">1</span> Dossier</h2>
+      <div class="grille-champs" id="champs-dossier">
+        <label>Copropriété<input data-d="copro" placeholder="Résidence Les Tilleuls"></label>
+        <label>Adresse<input data-d="adresse" placeholder="12 rue des Lilas, 69003 Lyon"></label>
+        <label>Syndic<input data-d="syndic" placeholder="Cabinet …"></label>
+        <label class="large">Objet des travaux / de la prestation<input data-d="objet" placeholder="Ravalement de la façade sur rue"></label>
+        <label>Date de l'AG / de la réunion<input type="date" data-d="dateAG"></label>
+        <label>Budget prévisionnel (€ TTC)<input type="number" step="0.01" min="0" data-d="budget"></label>
+        <label>Majorité requise
+          <select data-d="majorite">
+            <option value="24">Article 24 (majorité simple)</option>
+            <option value="25">Article 25 (majorité absolue)</option>
+            <option value="26">Article 26 (double majorité)</option>
+          </select>
+        </label>
+        <label>Clé de répartition<input data-d="cle" placeholder="Charges communes générales"></label>
+        <label>Total des tantièmes de la clé<input type="number" min="0" data-d="tantiemes" placeholder="10000"></label>
+        <label>Honoraires syndic (% du HT)<input type="number" step="0.1" min="0" data-d="honorairesPct" placeholder="ex. 2,5"></label>
+        <label>Assurance dommages-ouvrage (€ TTC)<input type="number" step="0.01" min="0" data-d="dommagesOuvrage"></label>
+      </div>
+    </section>
+
+    <!-- 2. Devis -->
+    <section class="carte no-print" id="section-devis">
+      <h2><span class="num">2</span> Devis reçus</h2>
+      <div id="zone-depot" class="zone-depot" tabindex="0" role="button" aria-label="Déposer des devis PDF">
+        <strong>Déposez ici les devis PDF</strong> ou cliquez pour les sélectionner.
+        <span class="aide">Le prestataire, les montants HT/TVA/TTC, le SIRET, les délais, la validité, l'acompte et la garantie décennale sont lus automatiquement. Les fichiers restent sur votre ordinateur.</span>
+        <input type="file" id="input-pdf" accept="application/pdf,.pdf" multiple hidden>
+      </div>
+      <div class="ligne-actions">
+        <button type="button" id="btn-ajout-manuel">+ Ajouter un devis manuellement</button>
+        <span id="etat-import" class="etat" role="status"></span>
+      </div>
+      <div id="liste-devis" class="liste-devis"></div>
+    </section>
+
+    <!-- 3. Pondération -->
+    <section class="carte no-print" id="section-criteres">
+      <h2><span class="num">3</span> Critères et pondération</h2>
+      <p class="aide">Chaque critère est noté sur 5 puis pondéré ; la note finale est sur 20. Prix et délai sont notés automatiquement (le moins cher / le plus rapide obtient 5). Les notes « technique » et « références » se saisissent sur chaque devis.</p>
+      <div class="grille-poids" id="champs-poids"></div>
+    </section>
+
+    <!-- 4. Comparatif -->
+    <section class="carte" id="section-comparatif">
+      <div class="titre-section">
+        <h2><span class="num no-print">4</span> Tableau comparatif</h2>
+        <div class="no-print actions">
+          <button type="button" id="btn-imprimer-tableau" class="btn-principal">Imprimer / PDF</button>
+          <button type="button" id="btn-excel" class="btn-principal">Exporter Excel</button>
+        </div>
+      </div>
+      <div class="print-only entete-impression" id="entete-impression"></div>
+      <div id="alertes-globales"></div>
+      <div class="defilement"><table id="tableau-comparatif" class="comparatif"></table></div>
+      <p class="aide legende"><span class="pastille meilleur"></span> meilleure valeur du critère &nbsp; <span class="pastille alerte"></span> point à vérifier</p>
+    </section>
+
+    <!-- 5. Note -->
+    <section class="carte" id="section-note">
+      <div class="titre-section">
+        <h2><span class="num no-print">5</span> Note de recommandation et projet de résolution</h2>
+        <div class="no-print actions">
+          <label class="choix-retenu">Entreprise proposée
+            <select id="select-retenu"></select>
+          </label>
+          <button type="button" id="btn-regenerer">Régénérer le texte</button>
+          <button type="button" id="btn-imprimer-note" class="btn-principal">Imprimer / PDF</button>
+          <button type="button" id="btn-copier-note">Copier</button>
+        </div>
+      </div>
+      <label class="no-print bloc">Avis du conseil syndical (repris dans la note)
+        <textarea id="avis-cs" rows="3" placeholder="Ex. : le conseil syndical a rencontré les trois entreprises le 12 novembre ; l'entreprise X a effectué une visite complète des lieux…"></textarea>
+      </label>
+      <p class="no-print aide" id="info-note"></p>
+      <textarea id="texte-note" class="no-print texte-note" rows="28" spellcheck="true"></textarea>
+      <div id="note-impression" class="print-only note-impression"></div>
+    </section>
+  </main>
+
+  <footer class="no-print pied">
+    Outil local : aucune donnée n'est envoyée sur Internet. Le travail est enregistré automatiquement dans ce navigateur ; utilisez « Enregistrer le dossier » pour le conserver ou le transmettre.
+  </footer>
+
+  <template id="tpl-devis">
+    <article class="devis">
+      <header class="devis-entete">
+        <input class="nom" data-f="prestataire" placeholder="Nom du prestataire" aria-label="Nom du prestataire">
+        <button type="button" class="btn-suppr" title="Retirer ce devis" aria-label="Retirer ce devis">✕</button>
+      </header>
+      <div class="badges"></div>
+      <div class="grille-devis">
+        <label>Montant HT (€)<input type="number" step="0.01" data-f="montantHT"></label>
+        <label>Taux TVA (%)<input type="number" step="0.1" data-f="tauxTVA"></label>
+        <label>TVA (€)<input type="number" step="0.01" data-f="montantTVA"></label>
+        <label>Montant TTC (€)<input type="number" step="0.01" data-f="montantTTC"></label>
+        <label>N° de devis<input data-f="numero"></label>
+        <label>Date du devis<input type="date" data-f="date"></label>
+        <label>Valable jusqu'au<input type="date" data-f="validiteDate"></label>
+        <label>Délai d'exécution (jours)<input type="number" min="0" data-f="delaiJours"></label>
+        <label>SIRET<input data-f="siret" inputmode="numeric"></label>
+        <label>Acompte (%)<input type="number" step="1" min="0" max="100" data-f="acomptePct"></label>
+        <label>Garantie décennale
+          <select data-f="decennale">
+            <option value="oui">Attestation fournie</option>
+            <option value="a_verifier">À vérifier</option>
+            <option value="non">Non fournie</option>
+          </select>
+        </label>
+        <label>Visite des lieux
+          <select data-f="visite">
+            <option value="">—</option>
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+          </select>
+        </label>
+        <label>Note technique (0–5)<input type="number" min="0" max="5" step="0.5" data-f="noteTechnique"></label>
+        <label>Note références (0–5)<input type="number" min="0" max="5" step="0.5" data-f="noteReferences"></label>
+        <label class="large">Certifications<input data-f="certifications" placeholder="Qualibat, RGE…"></label>
+        <label class="large">Observations / réserves<textarea rows="2" data-f="observations" placeholder="Prestations exclues, options, conditions particulières…"></textarea></label>
+      </div>
+      <details class="texte-source">
+        <summary>Texte extrait du PDF</summary>
+        <pre></pre>
+      </details>
+    </article>
+  </template>
+
+  <script src="vendor/pdfjs/pdf.min.js"></script>
+  <script src="vendor/pdfjs/pdf.worker.min.js"></script>
+  <script src="vendor/xlsx/xlsx.mini.min.js"></script>
+  <script src="js/extraction.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
