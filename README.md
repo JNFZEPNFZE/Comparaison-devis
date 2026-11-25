@@ -32,6 +32,24 @@ Le travail en cours est aussi conservé automatiquement dans le navigateur.
 
 Cliquez sur « Charger un exemple », ou déposez les trois devis fictifs du dossier `exemples/`.
 
+## Obligations réglementaires (`obligations.html`)
+
+Second outil, accessible depuis l'en-tête : suivi d'un **portefeuille de copropriétés** et calcul automatique des échéances.
+
+| Obligation | Ce que calcule l'outil |
+| --- | --- |
+| **Registre des copropriétés** | Date limite de la mise à jour annuelle (2 mois après l'AG d'approbation des comptes), retard si la mise à jour n'est pas faite, prochaine échéance d'après la date de la prochaine AG. **Fiche de mise à jour** prête à recopier sur registre-coproprietes.gouv.fr (charges, dettes fournisseurs, impayés, débiteurs > 300 €, fonds de travaux…). |
+| **PPPT** | Date d'exigibilité selon le nombre de lots principaux (> 200 : 2023, 51–200 : 2024, ≤ 50 : 2025) et l'âge de l'immeuble (> 15 ans), présentation en AG, actualisation tous les 10 ans, dispense par DTG. |
+| **DTG** | Question à soumettre à l'AG (immeuble > 10 ans), fin de validité à 10 ans. |
+| **DPE collectif** | Calendrier selon le nombre de lots (permis antérieur à 2013), renouvellement à 10 ans. |
+| **Fonds de travaux** | Cotisation minimale = max(5 % du budget prévisionnel ; 2,5 % des travaux du PPT adopté), contrôle de la cotisation votée, dispenses. |
+
+Livrables : **échéancier** filtrable (retards, urgences, 12 mois), **export agenda `.ics`** avec rappel (Outlook, Google Agenda…), **export Excel** (échéancier, portefeuille, fiches registre), **points d'ordre du jour** réglementaires par copropriété, impression.
+
+Import du portefeuille : « Modèle Excel » fournit le classeur à remplir (une ligne par copropriété), « Importer Excel… » le relit (les copropriétés de même nom sont mises à jour). Après chaque AG, mettez à jour les dates et les chiffres de l'exercice : l'échéancier se recalcule.
+
+Les règles et leurs références sont rappelées en bas de page (`js/obligations.js`, objet `REGLES`). **Elles résument la réglementation à la date de rédaction : faites valider les échéances par le syndic avant de les communiquer.**
+
 ## Limites
 
 - Les PDF **scannés** (images) ne contiennent pas de texte : saisissez les montants à la main.
@@ -42,6 +60,7 @@ Cliquez sur « Charger un exemple », ou déposez les trois devis fictifs du dos
 
 - `index.html`, `css/style.css`, `js/app.js` : interface.
 - `js/extraction.js` : lecture du texte des devis (fonctions pures, testées).
+- `obligations.html`, `css/obligations.css`, `js/app-obligations.js` : outil Obligations réglementaires ; `js/obligations.js` : règles et calcul des échéances (fonctions pures, testées).
 - `vendor/` : [pdf.js](https://github.com/mozilla/pdf.js) 3.11.174 (Apache 2.0) et [SheetJS](https://sheetjs.com) 0.18.5 (Apache 2.0), embarqués pour fonctionner hors ligne.
 - Tests : `node --test tests/*.test.js` (Node 18+).
 - Régénérer les PDF d'exemple : `python3 outils/generer_exemples.py` (nécessite `reportlab`).

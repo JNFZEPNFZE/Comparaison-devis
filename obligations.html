@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Obligations réglementaires</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/obligations.css">
+</head>
+<body>
+  <header class="entete no-print">
+    <div>
+      <h1>Obligations réglementaires</h1>
+      <p class="sous-titre">Registre des copropriétés, PPPT, DTG, DPE collectif et fonds de travaux — <a href="index.html">Comparaison de devis →</a></p>
+    </div>
+    <div class="actions-entete">
+      <button type="button" id="btn-exemple" class="btn-discret">Charger un exemple</button>
+      <button type="button" id="btn-importer" class="btn-discret">Importer Excel…</button>
+      <button type="button" id="btn-modele" class="btn-discret">Modèle Excel</button>
+      <button type="button" id="btn-ouvrir" class="btn-discret">Ouvrir…</button>
+      <button type="button" id="btn-sauver" class="btn-discret">Enregistrer</button>
+      <button type="button" id="btn-nouveau" class="btn-discret">Nouveau</button>
+      <input type="file" id="input-excel" accept=".xlsx,.xls,.csv" hidden>
+      <input type="file" id="input-json" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. Échéancier -->
+    <section class="carte" id="section-echeancier">
+      <div class="titre-section">
+        <h2><span class="num no-print">1</span> Échéancier du portefeuille</h2>
+        <div class="no-print actions">
+          <button type="button" id="btn-ics" class="btn-principal" title="Fichier à importer dans Outlook, Google Agenda ou Apple Calendrier, avec rappel">Exporter vers l'agenda (.ics)</button>
+          <button type="button" id="btn-excel" class="btn-principal">Exporter Excel</button>
+          <button type="button" id="btn-imprimer">Imprimer / PDF</button>
+        </div>
+      </div>
+      <p class="print-only" id="entete-impression"></p>
+      <div class="tuiles" id="tuiles"></div>
+      <div class="filtres no-print">
+        <label>Copropriété<select id="f-copro"></select></label>
+        <label>Obligation<select id="f-type"></select></label>
+        <label>Afficher
+          <select id="f-statut">
+            <option value="actions">À traiter (retards, urgences, à vérifier)</option>
+            <option value="12mois">Tout ce qui tombe dans les 12 mois</option>
+            <option value="tout">Tout, y compris à jour</option>
+          </select>
+        </label>
+      </div>
+      <div class="defilement"><table class="comparatif echeancier" id="table-echeancier"></table></div>
+    </section>
+
+    <!-- 2. Copropriétés -->
+    <section class="carte no-print" id="section-copros">
+      <h2><span class="num">2</span> Copropriétés</h2>
+      <div class="disposition">
+        <nav class="liste-copros" aria-label="Copropriétés">
+          <div id="liste-copros"></div>
+          <button type="button" id="btn-ajout">+ Ajouter une copropriété</button>
+        </nav>
+        <div id="fiche" class="fiche"></div>
+      </div>
+    </section>
+
+    <!-- 3. Synthèse de la copropriété sélectionnée -->
+    <section class="carte" id="section-synthese">
+      <div class="titre-section">
+        <h2><span class="num no-print">3</span> <span id="titre-synthese">Synthèse</span></h2>
+      </div>
+      <div id="synthese"></div>
+    </section>
+
+    <!-- 4. Règles -->
+    <section class="carte no-print" id="section-regles">
+      <h2><span class="num">4</span> Règles appliquées et réglages</h2>
+      <div class="grille-champs reglages">
+        <label>Seuil « à traiter » (jours avant l'échéance)<input type="number" min="0" id="r-urgent"></label>
+        <label>Rappel dans l'agenda (jours avant)<input type="number" min="0" id="r-rappel"></label>
+      </div>
+      <div id="regles"></div>
+      <p class="aide">Ces règles résument les textes en vigueur au moment de la rédaction de l'outil. La réglementation évolue : faites valider les échéances par le syndic ou le service juridique avant d'en informer les copropriétaires.</p>
+    </section>
+  </main>
+
+  <footer class="no-print pied">
+    Outil local : aucune donnée n'est envoyée sur Internet. Le portefeuille est enregistré automatiquement dans ce navigateur ; utilisez « Enregistrer » pour le conserver ou le transmettre.
+  </footer>
+
+  <script src="vendor/xlsx/xlsx.mini.min.js"></script>
+  <script src="js/obligations.js"></script>
+  <script src="js/app-obligations.js"></script>
+</body>
+</html>
